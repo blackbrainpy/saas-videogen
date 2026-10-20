@@ -1,8 +1,8 @@
 # Launch film method (the approved default)
 
-This method produced a real 2:10 launch film that its maker approved as final (Oct 2026). It is music-led, with no voice. Each chapter shows one feature, on a clean off-white ground. Its predecessor, the 61 s "pro" cut on black, got the "Absolute Cinema" verdict. The light cut then took the same method and fixed everything the user disliked.
+This method produced a real 2:10 launch film that its maker approved as final (Oct 2026). It is music-led, with no voice, on a clean off-white ground. This skill applies the method to 45–60 s films only. Its predecessor, the 61 s "pro" cut on black, got the "Absolute Cinema" verdict. The light cut then took the same method and fixed everything the user disliked.
 
-A working demo (opening line, logo switch, end card) is in `examples/demo/`, and a full 2-minute storyboard template is in `references/example-storyboard.md`. Open the demo frames when you need working code for a move.
+A working demo (opening line, logo switch, end card) is in `examples/demo/`, and a 60-second storyboard template is in `references/example-storyboard.md`. Open the demo frames when you need working code for a move.
 
 ## What the user rejected, and so must never come back
 - A black ground ("not fitting") and frosted glass ("it looks very bad"). Use clean off-white with soft colour glows; see `light-ground.md`.
@@ -11,23 +11,20 @@ A working demo (opening line, logo switch, end card) is in `examples/demo/`, and
 - Cutting on every line like a slideshow. Morph one object through every scene; see § Continuity.
 - AI-generated footage or people ("AI slop"). Use real product recordings and screenshots only.
 
-## Shapes of film
-| Cut | Length | Use | Frames |
-|---|---|---|---|
-| Hero launch film | 45–65 s | Store trailer, site hero, Product Hunt | 8–10 |
-| Extended "every feature" cut | ~2 min (110–135 s) | YouTube, site "see it work", onboarding | 16–20 |
-| Vertical social cuts | 15–22 s each | Reels / TikTok / Shorts | cut from the extended film (`scripts/social_cuts.py`) |
+## Length: 45–60 seconds, always
+The skill makes one film length: 45–60 s. If the user asks for something longer, make a 60 s film and offer vertical cuts. A tour of every feature doesn't fit; pick the 4–6 features that sell the product.
 
-### Extended-cut structure (the approved 2:10)
-1. **0–20 s: what it is, for a first-time viewer.**
-   - What the product is, in one plain line over the real product.
-   - What it holds or does (a short list, with each item landing on a beat).
-   - How you use it (one sentence).
-   - Then the **logo switch** (§ Logo switch) into the name: wordmark + a one-line definition.
-   - "Why you'd want it": real states fanning out around the hero object, with "Everything you check all day." → "One *glance* away."
-2. **20 s to ~1:50: one chapter per feature**, 5–9 s each. A tiny chapter tag sits top-left (Geist Mono 20 px, ink 45 %, e.g. "04 — LIQUID GLASS"). The first line names the feature plainly, then a real capture or a rebuilt state of it in use. Every chapter starts from and ends on the shared hand-over object.
-3. **Proof beat** (2–3 s) in a music dropout: one real measured fact typed into the silence (e.g. "0% CPU at idle", with the measuring note in small type). Only numbers the user measured.
-4. **End card** (10–13 s): app icon → wordmark → small facts line → price line → a store button pill → URL. It lands on the finale hits and holds for 2–3 s.
+| Output | Length | Use |
+|---|---|---|
+| Launch film | 45–60 s, 8–10 frames | Store trailer, site hero, Product Hunt, YouTube |
+| Vertical social cuts | 12–20 s each, 3–4 clips | Reels / TikTok / Shorts, cut from the film (`scripts/social_cuts.py`) |
+
+### Structure (see `references/example-storyboard.md`)
+1. **0–~7 s: hook, what it is.** One plain line over the real product (what it holds or does), then a second line whose last word does the **logo switch** (§ Logo switch).
+2. **~7–12 s: the name.** Logo builds from the pixel, wordmark + a one-line definition, collapse into the hand-over object.
+3. **~12–48 s: 4–6 feature beats, 5–7 s each,** on the music's steady pulse. The first line names the feature plainly, then a real capture or rebuilt state of it in use. Every beat starts from and ends on the shared hand-over object.
+4. **Proof beat (optional, 2–3 s)** in a music dropout: one real measured fact typed into the silence (e.g. "0% CPU at idle", with the measuring note in small type). Only numbers the user measured.
+5. **End card (~8 s):** app icon → wordmark → small facts line → offer line → a store button pill → URL. It lands on the finale hits and holds for 2–3 s.
 
 ## Continuity: one object morphs through everything
 - Pick the product's own shape as the hand-over object. The original film used its product's black pill: 624×120, r60, #0B0B0C, a 1 px white@8 % hairline, centred, and on light also `box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 18px 36px rgba(20,20,40,.18), 0 2px 6px rgba(20,20,40,.12)`.
@@ -76,7 +73,7 @@ The last word of the opening sentence breaks into pixels, which implode to one b
   | Typing in the silence | key, every ~0.1 s |
 
 - **What never gets a sound:** words of text, every beat, the closing of every frame, hover states.
-- **Density:** the approved film has 123 sounds in 130 s (~0.95/s). Over ~1.5/s in a frame reads as forced again.
+- **Density:** the approved film averaged ~0.95 sounds/s (a 60 s film: ~50–60 cues). Over ~1.5/s in a frame reads as forced again.
 
 ## Render, export, deliver
 - Lint: `npx hyperframes lint` (0 errors; file-size warnings are fine). Snapshot the joins (`npx hyperframes snapshot --at …`), especially the logo switch and the end card.

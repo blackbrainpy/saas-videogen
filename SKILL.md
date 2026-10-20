@@ -1,11 +1,11 @@
 ---
 name: saas-videogen
-description: Make a premium product launch film in HyperFrames, using the method behind a real launch film whose maker approved it as final. It is music-led, beat-locked and has no voice-over. It runs on a clean off-white ground with reference-grade type (Geist + one serif-italic accent per line), one product object morphs through every scene, a pixel-to-logo reveal, real product footage in rounded windows, and a sparse, meaningful sound design from a real SFX library. It covers a 45–65 s hero cut, a ~2-minute "every feature" extended cut that explains the product in its first 20 seconds, and 9:16 social cuts plus stills from the film. A kinetic voice-over variant is also available. Works for any product (app, SaaS, website, hardware, game, service) with any assets: screen recordings, screenshots, a website URL, a logo, or nothing. Use it whenever the user wants a launch video, promo, trailer, explainer-style product film, "a video like this reference", a feature tour, Product Hunt / App Store / Microsoft Store / YouTube / social promo or vertical cuts, or a new film for a new product, even if they don't say "kinetic" or "HyperFrames".
+description: Make a premium product launch film in HyperFrames, using the method behind a real launch film whose maker approved it as final. It is music-led, beat-locked and has no voice-over. It runs on a clean off-white ground with reference-grade type (Geist + one serif-italic accent per line), one product object morphs through every scene, a pixel-to-logo reveal, real product footage in rounded windows, and a sparse, meaningful sound design from a real SFX library. It makes 45–60 second films only, which say what the product is in the first ~7 seconds, plus 9:16 social cuts and stills from the film. A kinetic voice-over variant is also available. Works for any product (app, SaaS, website, hardware, game, service) with any assets: screen recordings, screenshots, a website URL, a logo, or nothing. Use it whenever the user wants a launch video, promo, trailer, explainer-style product film, "a video like this reference", a feature tour, Product Hunt / App Store / Microsoft Store / YouTube / social promo or vertical cuts, or a new film for a new product, even if they don't say "kinetic" or "HyperFrames".
 ---
 
 # Launch film
 
-This is the method behind a real 2:10 launch film (Oct 2026) that went through rounds of feedback until its maker approved it as final. Use it as the default for every new product. The full recipe, and the feedback that shaped it, are in `references/launch-film-method.md`. A rendered, working demo (opening line, pixel logo switch, end card, sound cues) is in `examples/demo/`; a full 2-minute storyboard template is in `references/example-storyboard.md`.
+This is the method behind a real 2:10 launch film (Oct 2026) that went through rounds of feedback until its maker approved it as final. Use it as the default for every new product. Films are always 45–60 s. The full recipe, and the feedback that shaped it, are in `references/launch-film-method.md`. A rendered, working demo (opening line, pixel logo switch, end card, sound cues) is in `examples/demo/`; a 60-second storyboard template is in `references/example-storyboard.md`.
 
 ## 0. Setup (any machine, any agent)
 Run `python scripts/setup.py` before anything else. It checks Node, the HyperFrames CLI and its Chrome, the HyperFrames agent skills, FFmpeg/FFprobe, Python with numpy/Pillow, and the optional faster-whisper/yt-dlp. It installs whatever is missing through winget/brew/apt and pip. Use `--check` to only report. `references/tools.md` lists every tool, including the web tools (Gemini music, ElevenLabs), which run in the user's own browser accounts and are never installed or signed into for them.
@@ -14,7 +14,7 @@ Run `python scripts/setup.py` before anything else. It checks Node, the HyperFra
 Ask for:
 - the product and its one message
 - which assets exist (`references/assets.md`)
-- the cut(s): hero 45–65 s, extended ~2 min, vertical cuts
+- the length within 45–60 s (the skill only makes 45–60 s films), and whether vertical cuts are wanted
 - voice or on-screen text only (default: text only)
 - brand colours and fonts (otherwise take them from the site or logo)
 
@@ -37,7 +37,7 @@ Work in `<repo>/videos/<project>/`, created with `npx hyperframes init <dir> --n
    - Notes: the hand-over state in px, the chapter tag style, and the copy rules.
    - A score map.
    - One block per frame with `- src:`, `- start:`, `- duration:`, assets, a `BEAT LOCK:` line (events on A/B hits) and copy with one `*accent*` word per line.
-   - Extended-cut structure: first 20 s say what it is → logo switch → why you'd want it → one chapter per feature → proof beat in a music silence → end card.
+   - Structure (45–60 s): hook that says what it is (~7 s) → logo switch into the name (~5 s) → 4–6 feature beats of 5–7 s → optional proof beat in a music silence → end card (~8 s). Template: `references/example-storyboard.md`.
 5. **Style files.** Copy `references/light-ground.md` and `references/type-motion.md` into `<dir>/.kinetic/` and fill in the brand tints.
 6. **Frames.**
    - `make_packets.py <dir>`. Each packet gets the frame's hit map from `.kinetic/beats.md` and points at the launch-film style files.
@@ -53,7 +53,7 @@ Work in `<repo>/videos/<project>/`, created with `npx hyperframes init <dir> --n
 9. **Render.** `npx hyperframes render --quality high --video-frame-format jpg --output renders/<name>.mp4` (put TEMP/TMP on a roomy drive). Then `export.py <dir> renders/<name>.mp4 <out> <Name>`, and look at the sheet it writes.
 10. **Social.**
     - `social_cuts.py <film.mp4> cuts.json <out>/vertical --prefix <Product>-Vertical --tail <end-card CTA span>`: 9:16, SAR 1:1, bt709, −14 LUFS.
-    - Pull 10–12 PNG stills at settled moments.
+    - Make 3–4 vertical clips (12–20 s each) and pull 6–8 PNG stills at settled moments.
     - Write `ASSETS.md` listing every file with its length and hook.
 11. **Deliver.** Give full paths, say what's new, and list the licence caveats: Gemini music and ElevenLabs free-plan sounds have no commercial licence, and note any third-party content visible in footage.
 

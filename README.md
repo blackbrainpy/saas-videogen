@@ -25,9 +25,8 @@ The method came out of many feedback rounds on a real launch film, measured agai
 ## Outputs
 | Cut | Length |
 |---|---|
-| Hero launch film | 45–65 s |
-| Extended "every feature" film (says what the product is in the first 20 s) | ~2 min |
-| Vertical 9:16 social clips with hook lines (SAR 1:1, bt709, -14 LUFS) | 15–22 s |
+| Launch film (says what the product is in the first ~7 s) | 45–60 s |
+| Vertical 9:16 social clips with hook lines (SAR 1:1, bt709, -14 LUFS) | 12–20 s |
 | Stills for image posts | |
 
 ## Install
@@ -40,7 +39,7 @@ python ~/.claude/skills/saas-videogen/scripts/setup.py
 
 ## Use
 Ask your agent, for example:
-- "Make a 2 minute launch video for my app <name> that shows every feature and makes it clear in the first 20 seconds what it is. Recordings are in ./videos."
+- "Make a 60 second launch video for my app <name> that makes it clear right away what it is. Recordings are in ./videos."
 - "60 second Product Hunt promo from these screenshots and our website, plus vertical cuts."
 
 The skill asks only what changes the output: the product, assets, cuts, voice or text, brand colours.
@@ -52,7 +51,7 @@ The skill asks only what changes the output: the product, assets, cuts, voice or
 | `references/launch-film-method.md` | The full recipe: structure, continuity, logo switch, music, sound, render, review checklist |
 | `references/light-ground.md`, `type-motion.md` | The look: ground, colours, fonts, the text-motion vocabulary |
 | `references/pro-motion-study.md` | What six professional SaaS films do differently, measured |
-| `references/example-storyboard.md` | A 2-minute storyboard template |
+| `references/example-storyboard.md` | A 60-second storyboard template |
 | `references/traps.md` | Failures that cost hours, and their fixes |
 | `scripts/` | `setup.py`, `beat_map.py`, `arrange_music.py`, `track_fit.py`, `make_packets.py`, `build_light_index.py`, `sound_design.py`, `social_cuts.py`, `export.py`, reference-study tools and more |
 | `assets/sfx-library/` | 42 sound-effect takes in 11 categories, plus the prompts to regenerate or extend them |
