@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #F2F2F0; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #F2F2F0; }
+      #ground { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: #F2F2F0; }
+      #glow-a { position: absolute; width: 1500px; height: 760px; left: 210px;
+        top: 760px; border-radius: 50%; filter: blur(60px);
+        background: radial-gradient(closest-side, rgba(150,140,255,.55), rgba(150,140,255,.28) 55%, rgba(242,242,240,0) 100%); }
+      #glow-b { position: absolute; width: 900px; height: 600px; left: 1250px;
+        top: 820px; border-radius: 50%; filter: blur(70px);
+        background: radial-gradient(closest-side, rgba(90,200,255,.38), rgba(242,242,240,0) 100%); }
+      .scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.5" data-width="1920" data-height="1080">
+      <div id="ground" class="clip" data-start="0" data-duration="18.5" data-track-index="0">
+        <div id="glow-a"></div><div id="glow-b"></div>
+      </div>
+      <div id="el-d01-open" class="scene" data-composition-id="d01-open" data-composition-src="compositions/frames/d01-open.html" data-start="0.0" data-duration="6.0" data-track-index="1"></div>
+      <div id="el-d02-name" class="scene" data-composition-id="d02-name" data-composition-src="compositions/frames/d02-name.html" data-start="6.0" data-duration="5.5" data-track-index="1"></div>
+      <div id="el-d03-end" class="scene" data-composition-id="d03-end" data-composition-src="compositions/frames/d03-end.html" data-start="11.5" data-duration="7.0" data-track-index="1"></div>
+      <audio id="el-sfx" src="assets/sfx-mix.wav" data-start="0" data-duration="18.5" data-track-index="12" data-volume="1.0"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      window.__timelines["main"] = tl;
+      // one slow drift for the whole film, so nothing moves at the seams
+      tl.fromTo("#glow-a", { x: 0, y: 0, scale: 1 }, { x: 140, y: -40, scale: 1.12, duration: 18.5, ease: "sine.inOut" }, 0);
+      tl.fromTo("#glow-b", { x: 0, y: 0 }, { x: -220, y: -30, duration: 18.5, ease: "sine.inOut" }, 0);
+      tl.to({}, { duration: 18.5 }, 0);
+    </script>
+  </body>
+</html>

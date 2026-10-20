@@ -1,0 +1,22 @@
+[
+ {
+  "t": 0.52,
+  "cat": "snap",
+  "why": "capsule closes into the lockup"
+ },
+ {
+  "t": 1.5,
+  "cat": "pop",
+  "why": "wordmark lands"
+ },
+ {
+  "t": 3.0,
+  "cat": "shimmer",
+  "why": "accent bloom"
+ },
+ {
+  "t": 4.95,
+  "cat": "swipe",
+  "why": "collapse into the pill"
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "t": 0.2,
+  "cat": "swipe",
+  "why": "first line tumbles in"
+ },
+ {
+  "t": 1.8,
+  "cat": "shimmer",
+  "why": "accent bloom"
+ },
+ {
+  "t": 4.8,
+  "cat": "pixels",
+  "why": "the word breaks into pixels"
+ },
+ {
+  "t": 5.08,
+  "cat": "pop",
+  "why": "the brand pixel is born"
+ }
+]

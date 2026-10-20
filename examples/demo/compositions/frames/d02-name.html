@@ -1,0 +1,150 @@
+<template>
+  <style>
+    @font-face { font-family: "d02-geist"; src: url("assets/fonts/Geist-Medium.ttf") format("truetype"); font-weight: 500; font-display: block; }
+    @font-face { font-family: "d02-geist-sb"; src: url("assets/fonts/Geist-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: block; }
+    @font-face { font-family: "d02-serif"; src: url("assets/fonts/instrument-serif-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+    .d02-layer { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 960px 540px; }
+
+    /* the mark: a pixel "L" (5x7 grid, 38 px tiles, 42 px pitch) inside a rounded capsule; built centred on 960,540 */
+    #d02-mark { position: absolute; left: 809px; top: 347px; width: 302px; height: 386px; transform-origin: 151px 193px; }
+    #d02-cap { position: absolute; left: 0; top: 0; width: 302px; height: 386px; overflow: visible; }
+    #d02-cap rect { fill: none; stroke: #111114; stroke-width: 12; opacity: 0; }
+    .d02-tile { position: absolute; width: 38px; height: 38px; background: #111114; opacity: 0; }
+    /* the brand pixel handed over by d01 (it lands as the mark's last tile) */
+    #d02-accent { position: absolute; left: 216px; top: 300px; width: 38px; height: 38px; background: #6C5CE7; border-radius: 3.8px;
+      box-shadow: 0 5.7px 13.3px rgba(20,20,40,.16), 0 .95px 3.8px rgba(20,20,40,.12); }
+
+    #d02-word { position: absolute; left: 835px; top: 416px; height: 168px; white-space: nowrap;
+      font-family: "d02-geist-sb", sans-serif; font-weight: 600; font-size: 168px; line-height: 168px; letter-spacing: -0.045em; color: #111114; }
+    .d02-letter { display: inline-block; opacity: 0; }
+
+    #d02-line { position: absolute; left: 0; top: 640px; width: 1920px; text-align: center; white-space: nowrap; transform-origin: 960px 50%;
+      font-family: "d02-geist", sans-serif; font-weight: 500; font-size: 54px; line-height: 76px; letter-spacing: -0.025em; color: #111114; }
+    .d02-w { display: inline-block; opacity: 0; }
+    .d02-accent { font-family: "d02-serif", serif; font-style: italic; font-weight: 400; font-size: 63.72px; letter-spacing: -0.01em; }
+
+    /* the capsule as a screen-space shape for the collapse into the hand-over pill */
+    #d02-pill { position: absolute; box-sizing: border-box; left: 598px; top: 380.3px; width: 187.2px; height: 239.3px;
+      border-radius: 55.8px; border: 7.4px solid #111114; background-color: rgba(11,11,12,0); opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="d02-name" data-width="1920" data-height="1080" data-duration="5.5">
+    <div id="d02-mark-layer" class="clip d02-layer" data-start="0" data-duration="5.5" data-track-index="1">
+      <div id="d02-mark">
+        <svg id="d02-cap" viewBox="0 0 302 386" width="302" height="386" xmlns="http://www.w3.org/2000/svg">
+          <rect id="d02-cap-rect" x="6" y="6" width="290" height="374" rx="88" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" />
+        </svg>
+        <div id="d02-tiles"></div>
+        <div id="d02-accent"></div>
+      </div>
+    </div>
+    <div id="d02-word-layer" class="clip d02-layer" data-start="0" data-duration="5.5" data-track-index="2">
+      <div id="d02-word"><span id="d02-l1" class="d02-letter">L</span><span id="d02-l2" class="d02-letter">u</span><span id="d02-l3" class="d02-letter">m</span><span id="d02-l4" class="d02-letter">e</span><span id="d02-l5" class="d02-letter">n</span></div>
+    </div>
+    <div id="d02-line-layer" class="clip d02-layer" data-start="0" data-duration="5.5" data-track-index="3">
+      <div id="d02-line"><span id="d02-w1" class="d02-w">A</span> <span id="d02-w2" class="d02-w">focus</span> <span id="d02-w3" class="d02-w">timer</span> <span id="d02-w4" class="d02-w">for</span> <span id="d02-w5" class="d02-w">your</span> <span id="d02-w6" class="d02-w d02-accent">desktop.</span></div>
+    </div>
+    <div id="d02-pill-layer" class="clip d02-layer" data-start="0" data-duration="5.5" data-track-index="4">
+      <div id="d02-pill"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var ID = "d02-name", DUR = 5.5;
+      // beat lock (frame-local): replace with your packet's hits
+      var HIT_BURST = 0.05, HIT_DONE = 0.34, HIT_CLOSE = 0.52, HIT_WORD = 1.5, HIT_LOCK = 1.7,
+          HIT_LINE = 2.6, HIT_ACC = 3.0, HIT_REDUCE = 4.2, HIT_GO = 4.95, LAND = 5.35;
+      var S_LOCK = 0.62, LOCK_X = -268.4, LOCK_Y = -40;
+      var TILES = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [1, 6], [2, 6], [3, 6]];  // the "L"; (4,6) is the accent
+      var ACC_C = { x: 48 + 4 * 42 + 19, y: 48 + 6 * 42 + 19 };   // accent centre in mark units
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      function one(s) { return document.querySelector(s); }
+      function seeded(i, k) { var s = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return s - Math.floor(s); }
+
+      var mark = one("#d02-mark"), acc = one("#d02-accent"), cap = one("#d02-cap-rect");
+      var layers = ["#d02-mark-layer", "#d02-word-layer", "#d02-line-layer"];
+
+      // t = 0: only the brand pixel, 40x40 at 960,540: exactly d01's hand-over (the accent tile is 38 px, so scale 40/38)
+      var SH_ON = "0px 5.7px 13.3px 0px rgba(20,20,40,0.16), 0px 0.95px 3.8px 0px rgba(20,20,40,0.12)";
+      var SH_OFF = "0px 5.7px 13.3px 0px rgba(20,20,40,0), 0px 0.95px 3.8px 0px rgba(20,20,40,0)";
+      tl.set(acc, { x: -84, y: -126, scale: 40 / 38, borderRadius: 3.8, boxShadow: SH_ON }, 0);
+      // 0 -> 0.05: it snaps home as the mark's last tile; its shadow lets go (nothing square outside a rounded logo)
+      tl.to(acc, { x: 0, y: 0, scale: 1, borderRadius: 0, duration: HIT_BURST, ease: "power3.in" }, 0);
+      tl.fromTo(acc, { boxShadow: SH_ON }, { boxShadow: SH_OFF, duration: 0.25, ease: "power2.out", immediateRender: false }, HIT_BURST);
+
+      // 0.05: the ink tiles burst out of the pixel and assemble the letter (nearest first), the last landing on HIT_DONE
+      var box = one("#d02-tiles");
+      var specs = TILES.map(function (t, i) {
+        var d = document.createElement("div");
+        d.id = "d02-tile-" + i; d.className = "d02-tile";
+        var hx = 48 + t[0] * 42, hy = 48 + t[1] * 42;
+        d.style.left = hx + "px"; d.style.top = hy + "px";
+        box.appendChild(d);
+        var dx = hx + 19 - ACC_C.x, dy = hy + 19 - ACC_C.y;
+        var ang = Math.atan2(dy, dx) + (seeded(i, 1) - 0.5), R = 190 + seeded(i, 2) * 110;
+        return { el: d, dist: Math.hypot(dx, dy), x0: -dx, y0: -dy, x1: Math.cos(ang) * R, y1: Math.sin(ang) * R, rot: (seeded(i, 3) - 0.5) * 80 };
+      }).sort(function (a, b) { return a.dist - b.dist; });
+      var HOME = 0.34, FIRST = 0.13, LAST = HIT_DONE - 0.385 * HOME;   // back.out(1.6) crosses its target at 38.5 %
+      specs.forEach(function (s, k) {
+        var start = FIRST + (LAST - FIRST) * (k / (specs.length - 1));
+        tl.set(s.el, { x: s.x0, y: s.y0, scale: 0.35, opacity: 0 }, 0);
+        tl.to(s.el, { x: s.x1, y: s.y1, rotation: s.rot, scale: 1, duration: start - HIT_BURST, ease: "expo.out" }, HIT_BURST);
+        tl.to(s.el, { opacity: 1, duration: 0.04, ease: "none" }, HIT_BURST);
+        tl.to(s.el, { x: 0, y: 0, rotation: 0, duration: HOME, ease: "back.out(1.6)" }, start);
+      });
+      tl.fromTo(acc, { scale: 1.25 }, { scale: 1, duration: 0.3, ease: "expo.out", immediateRender: false }, HIT_DONE);
+
+      // 0.10 -> 0.52: the capsule draws around the letter
+      tl.set(cap, { opacity: 1 }, 0.1);
+      tl.fromTo(cap, { attr: { "stroke-dashoffset": 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: HIT_CLOSE - 0.1, ease: "power2.inOut", immediateRender: false }, 0.1);
+
+      // 0.52: the camera pulls back and the mark slides into the lockup
+      tl.fromTo(mark, { x: 0, y: 0, scale: 1 }, { x: LOCK_X, y: LOCK_Y, scale: S_LOCK, duration: 0.6, ease: "expo.out", immediateRender: false }, HIT_CLOSE);
+
+      // 6. letter assemble: the wordmark letters fly in from seeded offsets and land on HIT_WORD
+      ["#d02-l1", "#d02-l2", "#d02-l3", "#d02-l4", "#d02-l5"].forEach(function (sel, n) {
+        var start = HIT_WORD - 0.17 - (4 - n) * 0.07;
+        tl.fromTo(sel, { x: 90 + seeded(n, 5) * 210, y: (seeded(n, 6) - 0.5) * 440, rotation: (seeded(n, 7) - 0.5) * 80, scale: 0.7, opacity: 0, filter: "blur(8px)" },
+          { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, start);
+      });
+      // the lockup punches once, then a calm slow push
+      tl.fromTo(layers, { scale: 1.03 }, { scale: 1, duration: 0.46, ease: "expo.out", immediateRender: false }, HIT_LOCK);
+      tl.fromTo(acc, { scale: 1.45 }, { scale: 1, duration: 0.4, ease: "expo.out", immediateRender: false }, HIT_LOCK);
+      tl.fromTo(layers, { scale: 1 }, { scale: 1.012, duration: HIT_GO - (HIT_LOCK + 0.46), ease: "sine.inOut", immediateRender: false }, HIT_LOCK + 0.46);
+
+      // the definition line: tumble-in, accent bloom, then reduce-to-keyword
+      var sans = ["#d02-w1", "#d02-w2", "#d02-w3", "#d02-w4", "#d02-w5"];
+      tl.set(sans.concat(["#d02-w6"]), { transformPerspective: 900, transformOrigin: "50% 100%" }, 0);
+      sans.forEach(function (sel, i) {
+        tl.fromTo(sel, { y: 36, rotationX: -70, opacity: 0, filter: "blur(10px)" },
+          { y: 0, rotationX: 0, opacity: 1, filter: "blur(0px)", duration: 0.62, ease: "expo.out", immediateRender: false }, HIT_LINE + i * 0.055);
+      });
+      tl.fromTo("#d02-w6", { y: 14, scale: 1.12, opacity: 0, filter: "blur(14px)" },
+        { y: 0, scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out", immediateRender: false }, HIT_ACC);
+      tl.fromTo("#d02-line", { scale: 1 }, { scale: 0.92, duration: 0.7, ease: "expo.out", immediateRender: false }, HIT_REDUCE);
+      tl.fromTo(sans, { y: 0, opacity: 1, filter: "blur(0px)" },
+        { y: 18, opacity: 0, filter: "blur(8px)", duration: 0.3, ease: "power2.in", stagger: 0.04, immediateRender: false }, HIT_REDUCE);
+      tl.fromTo("#d02-w6", { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(12px)", duration: 0.3, ease: "power2.in", immediateRender: false }, HIT_GO - 0.4);
+
+      // HIT_GO: everything collapses into the hand-over pill (624x120 r60 #0B0B0C at 960,540)
+      tl.fromTo(["#d02-tiles", "#d02-accent"], { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(12px)", duration: 0.12, ease: "power2.out", immediateRender: false }, HIT_GO);
+      tl.fromTo("#d02-word", { opacity: 1, filter: "blur(0px)", x: 0 }, { opacity: 0, filter: "blur(12px)", x: -80, duration: 0.12, ease: "power2.out", immediateRender: false }, HIT_GO);
+      tl.set(cap, { opacity: 0 }, HIT_GO);
+      var pill = one("#d02-pill");
+      tl.set(pill, { opacity: 1 }, HIT_GO);
+      tl.fromTo(pill, { x: 0, y: 0, width: 187.2, height: 239.3, borderRadius: 55.8, borderWidth: 7.4 },
+        { x: 50, y: 99.7, width: 624, height: 120, borderRadius: 60, borderWidth: 1, duration: LAND - HIT_GO, ease: "power4.out", immediateRender: false }, HIT_GO);
+      tl.fromTo(pill, { backgroundColor: "rgba(11,11,12,0)", borderColor: "rgba(17,17,20,1)" },
+        { backgroundColor: "rgba(11,11,12,1)", borderColor: "rgba(255,255,255,0.08)", duration: 0.2, ease: "power2.out", immediateRender: false }, HIT_GO);
+      tl.fromTo(pill, { boxShadow: "0px 18px 36px 0px rgba(20,20,40,0), 0px 2px 6px 0px rgba(20,20,40,0)" },
+        { boxShadow: "0px 18px 36px 0px rgba(20,20,40,0.18), 0px 2px 6px 0px rgba(20,20,40,0.12)", duration: LAND - HIT_GO, ease: "power2.out", immediateRender: false }, HIT_GO);
+
+      tl.set({}, {}, DUR);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

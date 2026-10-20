@@ -1,0 +1,22 @@
+[
+ {
+  "t": 6.0,
+  "cat": "swell",
+  "why": "ends on the logo reveal"
+ },
+ {
+  "t": 6.0,
+  "cat": "swoosh",
+  "why": "logo reveal"
+ },
+ {
+  "t": 6.05,
+  "cat": "impact",
+  "why": "tiles burst"
+ },
+ {
+  "t": 11.5,
+  "cat": "impact",
+  "why": "end card lands"
+ }
+]

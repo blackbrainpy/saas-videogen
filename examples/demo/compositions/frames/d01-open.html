@@ -1,0 +1,116 @@
+<template>
+  <style>
+    @font-face { font-family: "d01-geist"; src: url("assets/fonts/Geist-Medium.ttf") format("truetype"); font-weight: 500; font-display: block; }
+    @font-face { font-family: "d01-serif"; src: url("assets/fonts/instrument-serif-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+    .d01-line { position: absolute; left: 0; width: 1920px; text-align: center; white-space: nowrap;
+      font-family: "d01-geist", sans-serif; font-weight: 500; font-size: 54px; line-height: 76px; letter-spacing: -0.025em; color: #111114; }
+    #d01-l1 { top: 432px; }
+    /* line 2: the accent is centred on x 960 so it can stay put when the rest drops away;
+       "Stay in" hangs off its left edge */
+    #d01-l2 { top: 512px; height: 76px; }
+    #d01-acc-box { position: absolute; left: 960px; top: 0; }
+    #d01-acc { position: absolute; left: 0; top: -4px; display: inline-block;
+      font-family: "d01-serif", serif; font-style: italic; font-weight: 400; font-size: 63.72px; letter-spacing: -0.01em; }
+    #d01-pre { position: absolute; right: 50%; top: 0; padding-right: 64px; }
+    .d01-w { display: inline-block; opacity: 0; }
+    #d01-shards { position: absolute; left: 960px; top: 540px; width: 0; height: 0; }
+    .d01-shard { position: absolute; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 1px; background: #111114; opacity: 0; }
+    /* hand-over: ONE brand pixel, 40x40 r4, centred on 960,540, with a soft shape-hugging shadow */
+    #d01-pixel { position: absolute; left: 940px; top: 520px; width: 40px; height: 40px; border-radius: 4px; background: #6C5CE7;
+      opacity: 0; box-shadow: 0 6px 14px rgba(20,20,40,.16), 0 1px 4px rgba(20,20,40,.12); }
+  </style>
+
+  <div id="root" data-composition-id="d01-open" data-width="1920" data-height="1080" data-duration="6">
+    <div id="d01-type" class="clip" data-start="0" data-duration="6" data-track-index="1">
+      <div id="d01-l1" class="d01-line"><span id="d01-w1" class="d01-w">Start</span> <span id="d01-w2" class="d01-w">the</span> <span id="d01-w3" class="d01-w">timer.</span></div>
+      <div id="d01-l2" class="d01-line">
+        <div id="d01-acc-box">
+          <span id="d01-pre"><span id="d01-w4" class="d01-w">Stay</span> <span id="d01-w5" class="d01-w">in</span></span>
+          <span id="d01-acc" class="d01-w">flow.</span>
+        </div>
+      </div>
+    </div>
+    <div id="d01-shards" class="clip" data-start="4.75" data-duration="0.45" data-track-index="2"></div>
+    <div id="d01-pixel" class="clip" data-start="4.95" data-duration="1.05" data-track-index="3"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var ID = "d01-open", DUR = 6, ACCENT = "#6C5CE7", INK = "#111114";
+      // beat lock (frame-local): replace with the hits from your packet's hit map
+      var HIT_L1 = 0.2, HIT_L2 = 1.4, HIT_ACC = 1.8, HIT_REDUCE = 3.2, HIT_BREAK = 4.8, HIT_PIXEL = 5.08;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      function one(s) { return document.querySelector(s); }
+
+      // seeded noise: same render every time
+      function seeded(i, k) { var s = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return s - Math.floor(s); }
+
+      // 1. tumble-in: y +36, rotationX -70, blur 10 -> rest, 0.62 s expo.out, stagger 0.055; the last word lands late
+      function tumble(sels, at, lastLate) {
+        sels.forEach(function (sel, i) {
+          var late = lastLate && i === sels.length - 1;
+          tl.set(sel, { transformPerspective: 900, transformOrigin: "50% 100%" }, 0);
+          tl.fromTo(sel, { y: late ? 46 : 36, rotationX: late ? -88 : -70, opacity: 0, filter: "blur(10px)" },
+            { y: 0, rotationX: 0, opacity: 1, filter: "blur(0px)", duration: 0.62, ease: "expo.out", immediateRender: false },
+            at + i * 0.055 + (late ? 0.08 : 0));
+        });
+      }
+      // the accent is centred on x 960 with xPercent (a CSS translate would be overwritten by GSAP)
+      tl.set("#d01-acc", { xPercent: -50 }, 0);
+      tumble(["#d01-w1", "#d01-w2", "#d01-w3"], HIT_L1, true);
+      tumble(["#d01-w4", "#d01-w5"], HIT_L2, false);
+
+      // 3. accent bloom: blur 14 -> 0, scale 1.12 -> 1 (no letterSpacing tween: lint rejects it)
+      tl.fromTo("#d01-acc", { opacity: 0, scale: 1.12, filter: "blur(14px)" },
+        { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out", immediateRender: false }, HIT_ACC);
+
+      // 5. reduce-to-keyword: everything but the accent drops away; the accent stays centred and grows
+      tl.fromTo(["#d01-w1", "#d01-w2", "#d01-w3", "#d01-w4", "#d01-w5"], { y: 0, opacity: 1, filter: "blur(0px)" },
+        { y: 18, opacity: 0, filter: "blur(8px)", duration: 0.3, ease: "power2.in", stagger: 0.04, immediateRender: false }, HIT_REDUCE);
+      tl.fromTo("#d01-acc-box", { y: 0, scale: 1 }, { y: -10, scale: 1.3, duration: 0.8, ease: "expo.out", immediateRender: false }, HIT_REDUCE + 0.3);
+      // tension build into the break, then a two-frame RGB jitter
+      tl.fromTo("#d01-acc-box", { scale: 1.3 }, { scale: 1.42, duration: 0.5, ease: "power2.in", immediateRender: false }, HIT_BREAK - 0.5);
+      tl.set("#d01-acc", { x: 3, textShadow: "-4px 0 0 rgba(255,60,60,.3), 4px 0 0 rgba(22,200,255,.3)" }, HIT_BREAK - 0.067);
+      tl.set("#d01-acc", { x: -2, textShadow: "3px 0 0 rgba(255,60,60,.3), -3px 0 0 rgba(22,200,255,.3)" }, HIT_BREAK - 0.033);
+      tl.set("#d01-acc", { opacity: 0, x: 0, textShadow: "0 0 0 rgba(0,0,0,0)" }, HIT_BREAK);
+
+      // the break: a seeded 8 px mosaic over the word's box bursts out, then implodes to the centre
+      var box = one("#d01-shards"), shards = [];
+      for (var gy = 0; gy < 7; gy++) {
+        for (var gx = 0; gx < 22; gx++) {
+          var i = gy * 22 + gx;
+          if (seeded(i, 9) < 0.42) continue;
+          var d = document.createElement("div");
+          d.id = "d01-shard-" + i; d.className = "d01-shard";
+          d.style.left = (gx - 10.5) * 8 + "px"; d.style.top = (gy - 3) * 8 + "px";
+          box.appendChild(d);
+          shards.push({ el: d, x: (gx - 10.5) * 8, y: (gy - 3) * 8, i: i });
+        }
+      }
+      tl.set(shards.map(function (s) { return s.el; }), { opacity: 1 }, HIT_BREAK);
+      shards.forEach(function (s) {
+        var jx = (seeded(s.i, 1) - 0.5) * 40, jy = (seeded(s.i, 2) - 0.5) * 36, rot = (seeded(s.i, 3) - 0.5) * 70;
+        tl.to(s.el, { x: s.x * 0.6 + jx, y: s.y * 1.5 + jy, rotation: rot, duration: 0.12, ease: "expo.out" }, HIT_BREAK);
+        tl.to(s.el, { x: -s.x, y: -s.y, rotation: 0, scale: 0.6, duration: 0.16, ease: "power3.in" },
+          HIT_BREAK + 0.12 + Math.floor(seeded(s.i, 4) * 15) * 0.0015);
+      });
+      tl.set(shards.map(function (s) { return s.el; }), { opacity: 0 }, HIT_BREAK + 0.3);
+
+      // the single pixel is born ink, turns the brand colour, breathes once, then holds the hand-over state
+      var px = one("#d01-pixel");
+      tl.set(px, { opacity: 0, scale: 0.5, backgroundColor: INK }, 0);
+      tl.set(px, { opacity: 1 }, HIT_PIXEL);
+      tl.to(px, { scale: 1, duration: 0.16, ease: "back.out(1.6)" }, HIT_PIXEL);
+      tl.to(px, { backgroundColor: ACCENT, duration: 0.1, ease: "power2.out" }, HIT_PIXEL);
+      tl.to(px, { scale: 1.12, duration: 0.17, ease: "sine.inOut" }, HIT_PIXEL + 0.17);
+      tl.to(px, { scale: 1, duration: 0.17, ease: "sine.inOut" }, HIT_PIXEL + 0.34);
+      tl.set(px, { opacity: 1, scale: 1, backgroundColor: ACCENT }, HIT_PIXEL + 0.55);
+
+      tl.set({}, {}, DUR);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

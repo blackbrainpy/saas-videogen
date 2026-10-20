@@ -1,0 +1,82 @@
+[
+ {
+  "t": 0.42,
+  "cat": "pop",
+  "why": "glyph in the icon"
+ },
+ {
+  "t": 2.1,
+  "cat": "swipe",
+  "why": "price line"
+ },
+ {
+  "t": 3.6,
+  "cat": "key",
+  "why": "button press"
+ },
+ {
+  "t": 3.95,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.01,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.07,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.13,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.19,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.25,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.31,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.37,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.43,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.49,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.55,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.61,
+  "cat": "key",
+  "why": "url typing"
+ },
+ {
+  "t": 4.67,
+  "cat": "key",
+  "why": "url typing"
+ }
+]

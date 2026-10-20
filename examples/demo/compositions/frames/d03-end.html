@@ -1,0 +1,108 @@
+<template>
+  <style>
+    @font-face { font-family: "d03-geist"; src: url("assets/fonts/Geist-Medium.ttf") format("truetype"); font-weight: 500; font-display: block; }
+    @font-face { font-family: "d03-geist-sb"; src: url("assets/fonts/Geist-SemiBold.ttf") format("truetype"); font-weight: 600; font-display: block; }
+    @font-face { font-family: "d03-mono"; src: url("assets/fonts/GeistMono-Regular.ttf") format("truetype"); font-weight: 400; font-display: block; }
+    @font-face { font-family: "d03-serif"; src: url("assets/fonts/instrument-serif-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: block; }
+    #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+
+    /* starts as d02's hand-over pill (624x120 r60 at 960,540) and becomes the app icon */
+    #d03-icon { position: absolute; box-sizing: border-box; left: 648px; top: 480px; width: 624px; height: 120px; border-radius: 60px;
+      background: #0B0B0C; border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 18px 36px rgba(20,20,40,.18), 0 2px 6px rgba(20,20,40,.12); }
+    #d03-glyph { position: absolute; left: 726px; top: 365px; width: 78px; height: 110px; opacity: 0; }
+    .d03-gt { position: absolute; width: 14px; height: 14px; background: #F2F2F0; }
+    #d03-gacc { position: absolute; left: 64px; top: 96px; width: 14px; height: 14px; background: #6C5CE7; }
+
+    #d03-word { position: absolute; left: 889px; top: 360px; height: 120px; white-space: nowrap;
+      font-family: "d03-geist-sb", sans-serif; font-weight: 600; font-size: 120px; line-height: 120px; letter-spacing: -0.045em; color: #111114; }
+    .d03-letter { display: inline-block; opacity: 0; }
+
+    .d03-centre { position: absolute; left: 0; width: 1920px; text-align: center; white-space: nowrap; }
+    #d03-facts { top: 548px; font-family: "d03-geist", sans-serif; font-size: 24px; line-height: 32px; color: rgba(17,17,20,.55); opacity: 0; }
+    #d03-price { top: 598px; font-family: "d03-geist", sans-serif; font-weight: 500; font-size: 54px; line-height: 76px; letter-spacing: -0.025em; color: #111114; }
+    .d03-w { display: inline-block; opacity: 0; }
+    .d03-accent { font-family: "d03-serif", serif; font-style: italic; font-weight: 400; font-size: 63.72px; letter-spacing: -0.01em; }
+    #d03-btn { position: absolute; left: 820px; top: 712px; width: 280px; height: 72px; border-radius: 36px; background: #111114;
+      color: #F2F2F0; font-family: "d03-geist", sans-serif; font-size: 26px; line-height: 72px; text-align: center; opacity: 0;
+      box-shadow: 0 14px 28px rgba(20,20,40,.18), 0 2px 6px rgba(20,20,40,.12); }
+    #d03-url { top: 818px; font-family: "d03-mono", monospace; font-size: 24px; line-height: 32px; letter-spacing: .04em; color: rgba(17,17,20,.55); }
+    .d03-ch { display: inline-block; opacity: 0; }
+  </style>
+
+  <div id="root" data-composition-id="d03-end" data-width="1920" data-height="1080" data-duration="7">
+    <div id="d03-lockup" class="clip" data-start="0" data-duration="7" data-track-index="1">
+      <div id="d03-icon"></div>
+      <div id="d03-glyph"></div>
+      <div id="d03-word"><span id="d03-l1" class="d03-letter">L</span><span id="d03-l2" class="d03-letter">u</span><span id="d03-l3" class="d03-letter">m</span><span id="d03-l4" class="d03-letter">e</span><span id="d03-l5" class="d03-letter">n</span></div>
+    </div>
+    <div id="d03-cta" class="clip" data-start="0" data-duration="7" data-track-index="2">
+      <div id="d03-facts" class="d03-centre">Works offline · No account · Mac and Windows</div>
+      <div id="d03-price" class="d03-centre"><span id="d03-p1" class="d03-w d03-accent">Free</span> <span id="d03-p2" class="d03-w">for</span> <span id="d03-p3" class="d03-w">14</span>&nbsp;<span id="d03-p4" class="d03-w">days.</span></div>
+      <div id="d03-btn">Get Lumen</div>
+      <div id="d03-url" class="d03-centre"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      var ID = "d03-end", DUR = 7, URL_TEXT = "lumen.example";
+      // beat lock (frame-local): replace with your packet's hits
+      var HIT_ICON = 0.0, HIT_GLYPH = 0.42, HIT_WORD = 0.9, HIT_FACTS = 1.6, HIT_PRICE = 2.1, HIT_BTN = 3.0, HIT_PRESS = 3.6, HIT_URL = 3.95;
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      function one(s) { return document.querySelector(s); }
+      function seeded(i, k) { var s = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return s - Math.floor(s); }
+
+      // the hand-over pill morphs into the app icon tile (168x168 r40, left of centre)
+      tl.fromTo("#d03-icon", { x: 0, y: 0, width: 624, height: 120, borderRadius: 60 },
+        { x: 33, y: -144, width: 168, height: 168, borderRadius: 40, duration: 0.45, ease: "power4.out", immediateRender: false }, HIT_ICON);
+
+      // the glyph inside the icon: the same pixel "L", small, white tiles with the brand pixel last
+      var L = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [1, 6], [2, 6], [3, 6]];
+      var g = one("#d03-glyph");
+      L.forEach(function (t, i) {
+        var d = document.createElement("div");
+        d.id = "d03-gt-" + i; d.className = "d03-gt";
+        d.style.left = t[0] * 16 + "px"; d.style.top = t[1] * 16 + "px";
+        g.appendChild(d);
+      });
+      var acc = document.createElement("div"); acc.id = "d03-gacc"; g.appendChild(acc);
+      tl.fromTo(g, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.6)", immediateRender: false }, HIT_GLYPH);
+
+      // wordmark letters assemble beside the icon
+      ["#d03-l1", "#d03-l2", "#d03-l3", "#d03-l4", "#d03-l5"].forEach(function (sel, n) {
+        tl.fromTo(sel, { x: 60 + seeded(n, 1) * 160, y: (seeded(n, 2) - 0.5) * 300, rotation: (seeded(n, 3) - 0.5) * 60, opacity: 0, filter: "blur(8px)" },
+          { x: 0, y: 0, rotation: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "back.out(1.4)", immediateRender: false }, HIT_WORD - 0.17 - (4 - n) * 0.05);
+      });
+
+      // facts line, then the price line (tumble-in with the accent first)
+      tl.fromTo("#d03-facts", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out", immediateRender: false }, HIT_FACTS);
+      ["#d03-p1", "#d03-p2", "#d03-p3", "#d03-p4"].forEach(function (sel, i) {
+        tl.set(sel, { transformPerspective: 900, transformOrigin: "50% 100%" }, 0);
+        tl.fromTo(sel, { y: 36, rotationX: -70, opacity: 0, filter: "blur(10px)" },
+          { y: 0, rotationX: 0, opacity: 1, filter: "blur(0px)", duration: 0.62, ease: "expo.out", immediateRender: false }, HIT_PRICE + i * 0.055);
+      });
+
+      // the button pops in, then a press on its hit
+      tl.fromTo("#d03-btn", { opacity: 0, scale: 0.92, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "expo.out", immediateRender: false }, HIT_BTN);
+      tl.fromTo("#d03-btn", { scale: 0.94 }, { scale: 1, duration: 0.35, ease: "back.out(2)", immediateRender: false }, HIT_PRESS);
+
+      // the URL types in, one character per 0.06 s (each gets a "key" sound cue)
+      var url = one("#d03-url");
+      URL_TEXT.split("").forEach(function (c, i) {
+        var s = document.createElement("span");
+        s.id = "d03-ch-" + i; s.className = "d03-ch"; s.textContent = c;
+        url.appendChild(s);
+        tl.set(s, { opacity: 1 }, HIT_URL + i * 0.06);
+      });
+
+      // calm hold: a slow push on the whole card
+      tl.fromTo(["#d03-lockup", "#d03-cta"], { scale: 1 }, { scale: 1.015, duration: DUR - 1.2, ease: "sine.inOut", transformOrigin: "960px 540px", immediateRender: false }, 1.2);
+
+      tl.set({}, {}, DUR);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
